@@ -73,22 +73,24 @@ const ProductImage = memo(function ProductImage({
   );
 
   const ToggleButton = () => (
-    <button
-      onClick={onToggleDescription}
-      type="button"
-      className="absolute z-30 bg-bg-secondary p-1 bottom-0 right-0"
-      aria-label={showDescription ? "Hide description" : "Show description"}
-      style={{
-        borderRadius: "8px 0 7px 0px",
-        zIndex: 30,
-      }}
-    >
-      {showDescription ? (
-        <X className="w-5 text-text-primary h-5" />
-      ) : (
-        <Info className="w-5 text-text-primary h-5" />
-      )}
-    </button>
+    <div className="absolute z-30 p-1 bottom-0 right-0">
+      <button
+        onClick={onToggleDescription}
+        type="button"
+        className="bg-bg-secondary p-1 "
+        aria-label={showDescription ? "Hide description" : "Show description"}
+        style={{
+          borderRadius: "8px 0 7px 0px",
+          zIndex: 30,
+        }}
+      >
+        {showDescription ? (
+          <X className="w-5 text-text-primary h-5" />
+        ) : (
+          <Info className="w-5 text-text-primary h-5" />
+        )}
+      </button>
+    </div>
   );
 
   return (
@@ -123,7 +125,7 @@ export function ProductCard({
   const [showDescription, setShowDescription] = useState(false);
   const handleIncrement = useCallback(
     () => setQuantity((prev) => prev + 1),
-    []
+    [],
   );
 
   const handleDecrement = useCallback(() => {
@@ -132,6 +134,25 @@ export function ProductCard({
       setCheckout(false);
     }
   }, [quantity]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (
+      e.key === "ArrowUp" ||
+      e.key === "ArrowDown" ||
+      e.key === "ArrowLeft" ||
+      e.key === "ArrowRight"
+    ) {
+      e.preventDefault();
+    }
+
+    if (e.key === "ArrowUp" || e.key === "ArrowRight") {
+      handleIncrement();
+    }
+
+    if (e.key === "ArrowDown" || e.key === "ArrowLeft") {
+      handleDecrement();
+    }
+  };
 
   const handleCheckout = useCallback(async () => {
     window.location.href = `${checkoutBaseUrl}/buy/${product_id}?quantity=${quantity}`;
@@ -184,7 +205,7 @@ export function ProductCard({
               <p className="text-sm opacity-40 line-through">
                 {formatCurrency(
                   decodeCurrency(price, currency as CurrencyCode),
-                  currency as CurrencyCode
+                  currency as CurrencyCode,
                 )}
               </p>
               <div className="flex items-baseline gap-1">
@@ -239,6 +260,7 @@ export function ProductCard({
               quantity={quantity}
               onIncrement={handleIncrement}
               onDecrement={handleDecrement}
+              onKeyDown={handleKeyDown}
             />
             <Button
               className="w-full"

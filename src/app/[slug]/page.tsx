@@ -1,5 +1,5 @@
 import Header, { Business } from "@/components/header";
-import { ProductGrid } from "@/components/product/ProductGrid";
+
 import Banner from "@/components/ui/dodoui/banner";
 import { ProductCardProps } from "@/components/product/ProductCard";
 import { headers } from "next/headers";
@@ -12,9 +12,19 @@ import {
   getProducts,
   isUpstreamHttpError,
 } from "@/lib/server/storefront-client";
-import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { ProductGrid } from "@/components/product/ProductGrid";
+
+import BannerSkeleton from "@/components/product/skeletons/BannerSkeleton";
+import HeaderSkeleton from "@/components/product/skeletons/HeaderSkeleton";
+import { ProductGridSkeleton } from "@/components/product/skeletons/ProductGridSkeleton";
+
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 async function getData(slug: string) {
+  await delay(1500);
   const h = await headers();
   const mode = resolveModeFromHost(h);
   const checkoutBaseUrl = getCheckoutBaseUrl(mode);
@@ -38,17 +48,21 @@ async function getData(slug: string) {
       currency: product.currency,
     }));
 
-    const subscriptions: ProductCardProps[] = subsJson.items.map((subscription) => ({
-      product_id: subscription.product_id,
-      name: subscription.name,
-      image: subscription.image || undefined,
-      price: subscription.price,
-      description: subscription.description || "",
-      currency: subscription.currency,
-      payment_frequency_count: subscription.price_detail?.payment_frequency_count,
-      payment_frequency_interval: subscription.price_detail?.payment_frequency_interval,
-      trial_period_days: subscription.price_detail?.trial_period_days,
-    }));
+    const subscriptions: ProductCardProps[] = subsJson.items.map(
+      (subscription) => ({
+        product_id: subscription.product_id,
+        name: subscription.name,
+        image: subscription.image || undefined,
+        price: subscription.price,
+        description: subscription.description || "",
+        currency: subscription.currency,
+        payment_frequency_count:
+          subscription.price_detail?.payment_frequency_count,
+        payment_frequency_interval:
+          subscription.price_detail?.payment_frequency_interval,
+        trial_period_days: subscription.price_detail?.trial_period_days,
+      }),
+    );
 
     return {
       business: businessData,
@@ -58,9 +72,9 @@ async function getData(slug: string) {
       checkoutBaseUrl,
     } as const;
   } catch (err) {
-    if (isUpstreamHttpError(err) && err.statusCode === 404) {
-      return { notFound: true as const };
-    }
+    // if (isUpstreamHttpError(err) && err.statusCode === 404) {
+    //   return { notFound: true as const };
+    // }
 
     throw err;
   }
@@ -86,40 +100,71 @@ export async function generateMetadata({
   }
 }
 
+async function BannerSection({ slug }: { slug: string }) {
+  const { mode } = await getData(slug);
+  return <Banner mode={mode} />;
+}
+
+async function HeaderSection({ slug }: { slug: string }) {
+  const { business } = await getData(slug);
+  return <Header business={business} />;
+}
+
+const ProductsSection = async ({ slug }: { slug: string }) => {
+  const data = await getData(slug);
+
+  return (
+    <section className="flex flex-col pb-20 items-center max-w-[1145px] mx-auto justify-center mt-10 px-4">
+      {data.products.length > 0 && (
+        <ProductGrid
+          title="Products"
+          products={data.products}
+          checkoutBaseUrl={data.checkoutBaseUrl}
+        />
+      )}
+
+      {data.subscriptions.length > 0 && (
+        <div className="mt-8 w-full">
+          <ProductGrid
+            title="Subscriptions"
+            products={data.subscriptions}
+            checkoutBaseUrl={data.checkoutBaseUrl}
+          />
+        </div>
+      )}
+    </section>
+  );
+};
+
 export default async function Page({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const data = await getData(slug);
-  if ("notFound" in data) return redirect("/not-found");
-
-  const { business, products, subscriptions, mode, checkoutBaseUrl } = data;
 
   return (
     <main className="min-h-screen bg-bg-primary">
-      <Banner mode={mode} />
-      <Header business={business} />
-      <section className="flex flex-col pb-20 items-center max-w-[1145px] mx-auto justify-center mt-10 px-4">
-        {products.length > 0 && (
-          <ProductGrid
-            title="Products"
-            products={products}
-            checkoutBaseUrl={checkoutBaseUrl}
-          />
-        )}
+      <Suspense fallback={<BannerSkeleton />}>
+        <BannerSection slug={slug} />
+      </Suspense>
 
-        {subscriptions.length > 0 && (
-          <div className="mt-8 w-full">
-            <ProductGrid
-              title="Subscriptions"
-              products={subscriptions}
-              checkoutBaseUrl={checkoutBaseUrl}
-            />
-          </div>
-        )}
-      </section>
+      <Suspense fallback={<HeaderSkeleton />}>
+        <HeaderSection slug={slug} />
+      </Suspense>
+
+      <Suspense
+        fallback={
+          <section className="flex flex-col pb-20 items-center max-w-[1145px] mx-auto justify-center mt-10 px-4">
+            <ProductGridSkeleton title="Products" />
+            <div className="mt-8 w-full">
+              <ProductGridSkeleton title="Subscriptions" />
+            </div>
+          </section>
+        }
+      >
+        <ProductsSection slug={slug} />
+      </Suspense>
     </main>
   );
 }
