@@ -11,7 +11,7 @@ const ProductHoverCard = ({ children, className }: ProductHoverCardProps) => {
   return (
     <motion.div
       whileHover={{
-        scale: 1.05,
+        scale: 1.01,
         boxShadow: "0px 20px 40px rgba(0,0,0,0.15)",
       }}
       whileTap={{ scale: 0.98 }}

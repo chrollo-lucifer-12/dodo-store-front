@@ -3,7 +3,7 @@ const USE_MOCK_DATA = "true";
 const mockBusiness: BusinessResponse = {
   business_id: "mock_business_1",
   name: "Mock Storefront",
-  logo: "",
+  logo: "https://github.com/shadcn.png",
   banner: "",
 };
 

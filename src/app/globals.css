@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+*:focus-visible:not([class*="ring-"]):not([class*="outline"]) {
+  @apply outline-none ring-2 ring-neutral-700 ring-offset-2 ring-offset-white;
+}
+
+.dark *:focus-visible:not([class*="ring-"]):not([class*="outline"]) {
+  @apply ring-neutral-300 ring-offset-neutral-900;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
