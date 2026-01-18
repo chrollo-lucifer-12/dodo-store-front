@@ -98,7 +98,7 @@ const ProductImage = memo(function ProductImage({
       <img
         className="rounded-lg z-10 object-cover object-center"
         src={image || "/placeholder.png"}
-        alt={name}
+        alt={`${name} product image`}
       />
       <DescriptionOverlay />
       <ToggleButton />
@@ -185,7 +185,11 @@ export function ProductCard({
   }, []);
 
   return (
-    <div className="p-4 w-full sm:w-[260px] border border-border-tertiary bg-bg-primary rounded-lg flex flex-col">
+    <div
+      className="p-4 w-full sm:w-[260px] border border-border-tertiary bg-bg-primary rounded-lg flex flex-col"
+      role="group"
+      aria-label={`Product card for ${name}`}
+    >
       <ProductImage
         image={image}
         name={name}
@@ -243,6 +247,7 @@ export function ProductCard({
               iconPlacement="right"
               effect="expandIcon"
               icon={<ArrowRight className="w-5 h-5" />}
+              aria-label={`Purchase ${name}`}
             >
               Purchase
             </Button>
@@ -261,11 +266,13 @@ export function ProductCard({
               onIncrement={handleIncrement}
               onDecrement={handleDecrement}
               onKeyDown={handleKeyDown}
+              aria-label={`Quantity selector for ${name}`}
             />
             <Button
               className="w-full"
               variant="secondary"
               onClick={handleCheckout}
+              aria-label={`Buy ${name} now`}
             >
               Buy now
             </Button>

@@ -18,7 +18,10 @@ export function ProductQuantityControl({
       className="p-[6px] py-[7px] rounded-lg border border-border-tertiary gap-4 flex justify-center w-fit items-center"
       tabIndex={0}
       role="spinbutton"
+      aria-label="Product quantity selector"
       aria-valuenow={quantity}
+      aria-valuemin={1}
+      aria-valuemax={99}
       onKeyDown={onKeyDown}
     >
       <button
@@ -28,9 +31,9 @@ export function ProductQuantityControl({
       >
         -
       </button>
-      <p className="text-sm min-w-[20px] text-center" aria-label="Quantity">
-        {quantity}
-      </p>
+
+      <span className="text-sm min-w-[20px] text-center">{quantity}</span>
+
       <button
         onClick={onIncrement}
         className="bg-button-secondary-bg hover:bg-button-secondary-bg-hover rounded-md aspect-square h-[24px] flex items-center justify-center"

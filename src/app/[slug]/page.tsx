@@ -149,7 +149,11 @@ const ProductsSection = async ({ slug }: { slug: string }) => {
   }
 
   return (
-    <section className="flex flex-col pb-20 items-center max-w-[1145px] mx-auto justify-center mt-10 px-4">
+    <section
+      className="flex flex-col pb-20 items-center max-w-[1145px] mx-auto justify-center mt-10 px-4"
+      role="region"
+      aria-label="Products and subscriptions section"
+    >
       <ProductGrid
         title="Products"
         products={productsData.products}

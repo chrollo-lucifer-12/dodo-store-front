@@ -11,7 +11,11 @@ export interface Business {
 
 const Header = ({ business }: { business: Business }) => {
   return (
-    <header className="relative w-full">
+    <header
+      className="relative w-full"
+      role="banner"
+      aria-label="Business Header"
+    >
       <div className="relative h-[35dvh] md:h-[30dvh] w-full">
         <Image
           src={business.banner || "/banner.png"}
