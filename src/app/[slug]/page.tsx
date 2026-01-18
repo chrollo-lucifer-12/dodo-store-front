@@ -19,6 +19,15 @@ import BannerSkeleton from "@/components/product/skeletons/BannerSkeleton";
 import HeaderSkeleton from "@/components/product/skeletons/HeaderSkeleton";
 import { ProductGridSkeleton } from "@/components/product/skeletons/ProductGridSkeleton";
 
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -115,23 +124,19 @@ const ProductsSection = async ({ slug }: { slug: string }) => {
 
   return (
     <section className="flex flex-col pb-20 items-center max-w-[1145px] mx-auto justify-center mt-10 px-4">
-      {data.products.length > 0 && (
+      <ProductGrid
+        title="Products"
+        products={data.products}
+        checkoutBaseUrl={data.checkoutBaseUrl}
+      />
+
+      <div className="mt-8 w-full">
         <ProductGrid
-          title="Products"
-          products={data.products}
+          title="Subscriptions"
+          products={data.subscriptions}
           checkoutBaseUrl={data.checkoutBaseUrl}
         />
-      )}
-
-      {data.subscriptions.length > 0 && (
-        <div className="mt-8 w-full">
-          <ProductGrid
-            title="Subscriptions"
-            products={data.subscriptions}
-            checkoutBaseUrl={data.checkoutBaseUrl}
-          />
-        </div>
-      )}
+      </div>
     </section>
   );
 };

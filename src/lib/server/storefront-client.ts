@@ -1,4 +1,4 @@
-const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
+const USE_MOCK_DATA = "true";
 
 const mockBusiness: BusinessResponse = {
   business_id: "mock_business_1",
