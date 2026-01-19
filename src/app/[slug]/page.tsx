@@ -12,13 +12,13 @@ import {
   getProducts,
   isUpstreamHttpError,
 } from "@/lib/server/storefront-client";
-import { Suspense } from "react";
+import { cache, Suspense } from "react";
 import { ProductGrid } from "@/components/product/ProductGrid";
 
 import BannerSkeleton from "@/components/product/skeletons/BannerSkeleton";
 import HeaderSkeleton from "@/components/product/skeletons/HeaderSkeleton";
 import { ProductGridSkeleton } from "@/components/product/skeletons/ProductGridSkeleton";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import MotionFadeIn from "@/components/product/MotionFadeIn";
 
 export async function generateMetadata({
@@ -49,7 +49,7 @@ async function getRequestContext() {
   return { mode, checkoutBaseUrl };
 }
 
-async function getBusinessData(slug: string) {
+const getBusinessData = cache(async (slug: string) => {
   const { mode } = await getRequestContext();
 
   try {
@@ -61,7 +61,7 @@ async function getBusinessData(slug: string) {
     }
     throw err;
   }
-}
+});
 
 async function getProductsData(slug: string) {
   const { mode, checkoutBaseUrl } = await getRequestContext();
@@ -127,7 +127,7 @@ async function getSubscriptionsData(slug: string) {
 
 async function BannerSection({ slug }: { slug: string }) {
   const data = await getBusinessData(slug);
-  if ("notFound" in data) return redirect("/not-found");
+  if ("notFound" in data) return notFound();
 
   return (
     <MotionFadeIn>
