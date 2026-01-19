@@ -40,7 +40,11 @@ export function ProductGrid({
               ? "No Products Available"
               : "No Subscriptions Available"
           }
-          description={""}
+          description={
+            title === "Products"
+              ? "No products have been added yet."
+              : "No subscriptions have been created yet."
+          }
           icon={title === "Products" ? ShoppingCart : CreditCard}
         />
       )}

@@ -19,6 +19,7 @@ import BannerSkeleton from "@/components/product/skeletons/BannerSkeleton";
 import HeaderSkeleton from "@/components/product/skeletons/HeaderSkeleton";
 import { ProductGridSkeleton } from "@/components/product/skeletons/ProductGridSkeleton";
 import { redirect } from "next/navigation";
+import MotionFadeIn from "@/components/product/MotionFadeIn";
 
 export async function generateMetadata({
   params,
@@ -128,14 +129,22 @@ async function BannerSection({ slug }: { slug: string }) {
   const data = await getBusinessData(slug);
   if ("notFound" in data) return redirect("/not-found");
 
-  return <Banner mode={data.mode} />;
+  return (
+    <MotionFadeIn>
+      <Banner mode={data.mode} />
+    </MotionFadeIn>
+  );
 }
 
 async function HeaderSection({ slug }: { slug: string }) {
   const data = await getBusinessData(slug);
   if ("notFound" in data) return redirect("/not-found");
 
-  return <Header business={data.business} />;
+  return (
+    <MotionFadeIn>
+      <Header business={data.business} />
+    </MotionFadeIn>
+  );
 }
 
 const ProductsSection = async ({ slug }: { slug: string }) => {
@@ -149,27 +158,29 @@ const ProductsSection = async ({ slug }: { slug: string }) => {
   }
 
   return (
-    <section
-      className="flex flex-col pb-20 items-center max-w-[1145px] mx-auto justify-center mt-10 px-4"
-      role="region"
-      aria-label="Products and subscriptions section"
-    >
-      <ProductGrid
-        title="Products"
-        products={productsData.products}
-        checkoutBaseUrl={productsData.checkoutBaseUrl}
-        icon="products"
-      />
-
-      <div className="mt-8 w-full">
+    <MotionFadeIn>
+      <section
+        className="flex flex-col pb-20 items-center max-w-[1145px] mx-auto justify-center mt-10 px-4"
+        role="region"
+        aria-label="Products and subscriptions section"
+      >
         <ProductGrid
-          title="Subscriptions"
-          products={subsData.subscriptions}
-          checkoutBaseUrl={subsData.checkoutBaseUrl}
-          icon="subscriptions"
+          title="Products"
+          products={productsData.products}
+          checkoutBaseUrl={productsData.checkoutBaseUrl}
+          icon="products"
         />
-      </div>
-    </section>
+
+        <div className="mt-8 w-full">
+          <ProductGrid
+            title="Subscriptions"
+            products={subsData.subscriptions}
+            checkoutBaseUrl={subsData.checkoutBaseUrl}
+            icon="subscriptions"
+          />
+        </div>
+      </section>
+    </MotionFadeIn>
   );
 };
 
